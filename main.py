@@ -50,9 +50,17 @@ def clip():
     title = f"{title} - {username}"
     # get driver
     driver = app.driver
-    driver.get(f"https://www.youtube.com/watch?v={video_id}")
+    while True:
+        try:
+            driver.get(f"https://www.youtube.com/watch?v={video_id}")
+        except selenium.common.exceptions.NoSuchWindowException:
+            driver = construct_driver()
+            app.driver = driver
+            continue
+        else:
+            break
+    sleep(0.5)
     # button with title 'clip'
-    sleep(1)
     #driver.execute_script("document.body.style.zoom = '0.5'")
     try:
         driver.find_element(By.XPATH, "//button[@aria-label='Clip']").click()
@@ -87,25 +95,27 @@ def clip():
         else:
             return x.get_attribute("value")
 
-driver = webdriver.Chrome()
-with open("cookies.json", "r", encoding="UTF-8") as f:
-    cookie_dict = json.load(f)
+def construct_driver():
+    driver = webdriver.Chrome()
+    with open("cookies.json", "r", encoding="UTF-8") as f:
+        cookie_dict = json.load(f)
 
 
-driver.maximize_window()
-driver.get(cookie_dict["url"])
-for cookie in cookie_dict["cookies"]:
-    if cookie["sameSite"] == "unspecified":
-        cookie["sameSite"] = "Lax"
-    elif cookie["sameSite"] == "no_restriction":
-        cookie["sameSite"] = "None"
-    else:
-        cookie["sameSite"] = "Strict"
-    driver.add_cookie(cookie)
+    driver.maximize_window()
+    driver.get(cookie_dict["url"])
+    for cookie in cookie_dict["cookies"]:
+        if cookie["sameSite"] == "unspecified":
+            cookie["sameSite"] = "Lax"
+        elif cookie["sameSite"] == "no_restriction":
+            cookie["sameSite"] = "None"
+        else:
+            cookie["sameSite"] = "Strict"
+        driver.add_cookie(cookie)
 
+    driver.get(cookie_dict["url"])
+    return driver
 
-driver.get(cookie_dict["url"])
-
+driver = construct_driver()
 
 
 if __name__ == '__main__':
