@@ -62,16 +62,19 @@ def clip():
     sleep(0.5)
     # button with title 'clip'
     #driver.execute_script("document.body.style.zoom = '0.5'")
-    try:
-        driver.find_element(By.XPATH, "//button[@aria-label='Clip']").click()
-    except selenium.common.exceptions.ElementNotInteractableException:
-        while True:
+    while True:
+        try:
+            driver.find_element(By.XPATH, "//button[@aria-label='Clip']").click()
+        except selenium.common.exceptions.NoSuchElementException:
             try:
                 driver.find_element(By.XPATH, "//button[@aria-label='More actions']").click()
                 sleep(0.5)
                 driver.find_element(By.XPATH, "//button[@aria-label='Clip']").click()
             except:
-                pass
+                continue
+            else:
+                break
+        else:
             break
         
     start = driver.find_elements(by=By.ID, value="start")[1]
