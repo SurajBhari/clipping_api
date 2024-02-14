@@ -99,7 +99,7 @@ def clip():
             return x.get_attribute("value")
 
 def construct_driver():
-    driver = webdriver.Chrome()
+    driver = webdriver.Firefox()
     with open("cookies.json", "r", encoding="UTF-8") as f:
         cookie_dict = json.load(f)
 
